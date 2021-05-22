@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.prod
+    command: gunicorn webtest.wsgi:application --bind 0.0.0.0:8080
+    volumes:
+      - static_volume:/home/app/web/static
+    expose:
+      - 8080
+      
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/static
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+
+volumes:
+  static_volume:

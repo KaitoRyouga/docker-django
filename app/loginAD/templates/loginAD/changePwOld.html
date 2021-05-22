@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Change Pass word</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+
+<body>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div class="form-group">
+            <p>
+                <label for="id_opt">OPT</label>
+                <input class="form-control" id="id_opt" name="OPT" autofocus="" required="" type="text">
+            </p>
+            <p>
+                <label for="id_password">newpassword</label>
+                <input class="form-control" id="id_password" name="password" autofocus="" required="" type="password">
+            </p>
+
+
+            <button type="submit">submit</button>
+        </div>
+    </form>
+
+</body>
+
+</html>
