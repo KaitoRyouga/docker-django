@@ -21,7 +21,7 @@ def deleteAllDB():
 
 
 def connect(userAD, passAD):
-    LDAP_URL = '192.168.1.11'
+    LDAP_URL = '192.168.2.11'
     tls_configuration = Tls(validate=ssl.CERT_NONE,
                             version=ssl.PROTOCOL_TLSv1_2)
     ser = Server(LDAP_URL, port=636, use_ssl=True,
@@ -30,6 +30,13 @@ def connect(userAD, passAD):
     conn.start_tls()
     conn.bind()
     # NameAu = conn.extend.standard.who_am_i()
+    # i=0
+    # x=''
+    # while i < len(NameAu):
+    #     if i > 11:
+    #         x=x+ str(NameAu[i])
+    #     i=i+1
+    #     # return x
     return conn
 
 # tạo token
@@ -61,26 +68,20 @@ def save_UserPw_token(userAD, passAD, tokenAD):
 # send email token
 
 
-def send_EmailToken(userAD, passAD, tokenAD):
+def send_EmailToken(userADx, passAD, tokenAD):
     # send email
     try:
-        conn = connect(userAD, passAD)
+    
 
-        LDAP_FILTER = '(cn=' + userAD + ')'
-        LDAP_ATTRS = ['mail']
-        conn.search('DC=htcglobal,DC=com,DC=vn',
-                    LDAP_FILTER, attributes=LDAP_ATTRS)
-        x = conn.entries
-        # conver list to string
-        email = ''.join(map(str, x[0]))
-        # email = 'dung2000hl2@gmail.com'
+        email = userADx
         # conn.unbind()
-        subjects = 'check Change password AD'
+        subjects = 'Change password AD'
         messages = ('Input this to input Token authencation: ' + tokenAD)
         email_from = settings.EMAIL_HOST_USER
         recepient = email
         send_mail(subjects, messages, email_from, [
                   recepient], fail_silently=False)
+
         check = 'True'
         return check
     except:
@@ -102,34 +103,52 @@ def Authen_Token(token):
     # True neu dung False nếu sai
 
 
-def test(request):
-    # username = 'web'
-    # # passw = 'D@kuhebi1108//'  # 'Bf_^$y3TVkbr*LX8'
-    # # x = connect(username, passw)
-    # # token = make_token()
-    # xx = Authen_Token('498569')
-    # x = str(xx)
-    # if x == username:
-    return render(request, 'loginAD/success.html')
-
-    # return HttpResponse("s"+xx)
 
 # change password of user
 
 
 def ChangePw_AD(userAD, passAD, new_passAD):
 
+
+    # lay username tu email nhap vao
+    con = connect(userAD, passAD)
+    NameAu = con.extend.standard.who_am_i()
+    con.unbind()
+    i=0
+    xx=''
+    while i < len(NameAu):
+        if i > 11:
+            xx=xx+ str(NameAu[i])
+        i=i+1
+    userADs = xx
+    
+
+    s = Server('192.168.2.11')
+    c = Connection(s, 'web', 'D@kuhebi1108')
+    c.bind()
+    # print(c.result)
+    s = "(&(sAMAccountName="+userADs+"))"
+    base = "OU=Zimbra,DC=htcglobal,DC=com,DC=vn"
+    c.search(search_base=base, search_filter=s,
+                    attributes = ["CN"], paged_size = 5)
+    # print(c.result)
+    x = c.entries
+    # conver list to string
+    userCN = ''.join(map(str, x[0]))
+
+
     # #  connect
-    conn = connect(userAD, passAD)
+    AD = 'CN=web,OU=Zimbra,DC=htcglobal,DC=com,DC=vn'
+    conn = connect(AD, 'D@kuhebi1108')
     enc_pwd = '"{}"'.format(new_passAD).encode('utf-16-le')
     changes = {'unicodePwd': [(MODIFY_REPLACE, [enc_pwd])]}
     try:
         # Change pass
-        userADx = 'CN=' + userAD + ',OU=Zimbra,DC=htcglobal,DC=com,DC=vn'
-        conn.modify(userADx, changes=changes)
+        userADx = 'CN='+userCN+',OU=Zimbra,DC=htcglobal,DC=com,DC=vn'
+        x=conn.modify(userADx, changes=changes)
         conn.unbind()
         Check = 'True'
-        return Check
+        return x
     except:
         Check = 'False'
         conn.unbind()
@@ -137,8 +156,6 @@ def ChangePw_AD(userAD, passAD, new_passAD):
 
 
 def ChangPw(request):
-    # userAD = 'web'
-    # passAD = 'Bf_^$y3TVkbr*LX8'
 
     if request.method == 'POST':
         # try:
@@ -159,13 +176,14 @@ def ChangPw(request):
             # userADx = 'CN=' + userAD + \
             #     ',OU=Zimbra,DC=htcglobal,DC=com,DC=vn'
             try:
-
-                ChangePw_AD(userAD, passAD, newpassAD)
-                deleteAllDB()
-                return HttpResponseRedirect('/success/')
+                if ChangePw_AD(userAD, passAD, newpassAD) == True:
+                    deleteAllDB()
+                    return HttpResponseRedirect('/success/')
+                else:
+                    raise Http404('ga')
             except:
-                return Http404('pass no change')
-
+                x= ChangePw_AD(userAD, passAD, newpassAD) 
+                raise Http404('pass no change',x)
             # return HttpResponse(str(Authen_Token(tokenAD)))
         else:
             raise Http404("OPT does not exist ")
@@ -184,11 +202,14 @@ def Index(request):
         # get user pass
         userAD = request.POST["username"]
         passAD = request.POST["password"]
-        # userAD = 'web'
-        # passAD = 'Bf_^$y3TVkbr*LX8'
+        # userAD = str(userAD)
+        # passAD = str(passAD)
+
     # try:
+        # userADx = 'CN=' + userAD + ',OU=Zimbra,DC=htcglobal,DC=com,DC=vn'
         c = connect(userAD, passAD)
         if c.bind() == True:
+
             # goi ham tao token
             tokenAD = make_token()
             # lưu token
@@ -198,11 +219,12 @@ def Index(request):
                     # chuyen den trang nhap OPT
                     return HttpResponseRedirect('/changpass/')
                 else:
-                    raise Http404("No email in user")
+                    x=send_EmailToken(userAD, passAD, tokenAD) 
+                    raise Http404("No email in user",str(x))
             else:
                 raise Http404("Saving infor faile ")
         else:
-            raise Http404("User does not exist")
+            raise Http404("User does not exist - password error " ,str(c))
 
     # except:
     #    raise Http404("ERRO user")
