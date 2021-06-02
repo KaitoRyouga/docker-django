@@ -25,7 +25,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
@@ -41,13 +41,13 @@ SECRET_KEY = 'django-insecure-$3m+i4lb@rdoii5u)2aetd**-9^o)22bqp_n$@teluqs_7=ej3
 # ]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'django_python3_ldap.auth.LDAPBackend',
+    
 ]
 # Application definition
 
@@ -164,3 +164,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'bernardtest.htc@gmail.com'
 EMAIL_HOST_PASSWORD = 'kiwqqvwpxkrdgwuz'
+
+USADs = 'web'
+PwADs = 'D@kuhebi1108'
