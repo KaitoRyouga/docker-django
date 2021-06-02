@@ -43,7 +43,11 @@ SECRET_KEY = 'django-insecure-$3m+i4lb@rdoii5u)2aetd**-9^o)22bqp_n$@teluqs_7=ej3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['*']
+=======
+ALLOWED_HOSTS = [192.168.1.121]
+>>>>>>> f89866cdb186037eaeb036610e20b12092c7fae7
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -164,6 +168,9 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'bernardtest.htc@gmail.com'
 EMAIL_HOST_PASSWORD = 'kiwqqvwpxkrdgwuz'
+<<<<<<< HEAD
 
 USADs = 'web'
 PwADs = 'D@kuhebi1108'
+=======
+>>>>>>> f89866cdb186037eaeb036610e20b12092c7fae7
